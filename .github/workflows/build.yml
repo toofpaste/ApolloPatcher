@@ -1,0 +1,48 @@
+name: build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-theos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git make clang perl python3 python3-pip \
+            dpkg fakeroot xz-utils unzip zip curl \
+            libplist-utils jq
+
+      - name: Install Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git "$GITHUB_WORKSPACE/theos"
+          echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
+
+      - name: Sanity check THEOS
+        run: |
+          echo "THEOS is: $THEOS"
+          test -f "$THEOS/makefiles/common.mk"
+          test -f "$THEOS/makefiles/tweak.mk"
+
+      - name: Build (repo build script)
+        run: |
+          chmod +x ./build.sh
+          ./build.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            packages/*.deb
+            *.dylib
+            *.ipa
+          if-no-files-found: warn
