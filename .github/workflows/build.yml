@@ -33,10 +33,12 @@ jobs:
           test -f "$THEOS/makefiles/tweak.mk"
 
       - name: Install iOS SDKs
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p "$THEOS/sdks"
-          curl -L -o /tmp/iPhoneOS14.5.sdk.tar.xz https://github.com/theos/sdks/releases/download/20230630/iPhoneOS14.5.sdk.tar.xz
-          curl -L -o /tmp/iPhoneOS16.5.sdk.tar.xz https://github.com/theos/sdks/releases/download/20230630/iPhoneOS16.5.sdk.tar.xz
+          gh release download 20230630 -R theos/sdks --pattern "iPhoneOS14.5.sdk.tar.xz" --dir /tmp
+          gh release download 20230630 -R theos/sdks --pattern "iPhoneOS16.5.sdk.tar.xz" --dir /tmp
           tar -xf /tmp/iPhoneOS14.5.sdk.tar.xz -C "$THEOS/sdks"
           tar -xf /tmp/iPhoneOS16.5.sdk.tar.xz -C "$THEOS/sdks"
           rm /tmp/iPhoneOS14.5.sdk.tar.xz /tmp/iPhoneOS16.5.sdk.tar.xz
