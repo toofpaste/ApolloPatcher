@@ -32,6 +32,15 @@ jobs:
           test -f "$THEOS/makefiles/common.mk"
           test -f "$THEOS/makefiles/tweak.mk"
 
+      - name: Install iOS SDKs
+        run: |
+          mkdir -p "$THEOS/sdks"
+          curl -L -o /tmp/iPhoneOS14.5.sdk.tar.xz https://github.com/theos/sdks/releases/download/20230630/iPhoneOS14.5.sdk.tar.xz
+          curl -L -o /tmp/iPhoneOS16.5.sdk.tar.xz https://github.com/theos/sdks/releases/download/20230630/iPhoneOS16.5.sdk.tar.xz
+          tar -xf /tmp/iPhoneOS14.5.sdk.tar.xz -C "$THEOS/sdks"
+          tar -xf /tmp/iPhoneOS16.5.sdk.tar.xz -C "$THEOS/sdks"
+          rm /tmp/iPhoneOS14.5.sdk.tar.xz /tmp/iPhoneOS16.5.sdk.tar.xz
+
       - name: Build (repo build script)
         run: |
           chmod +x ./build.sh
